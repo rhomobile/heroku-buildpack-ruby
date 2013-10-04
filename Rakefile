@@ -2,7 +2,7 @@ require "fileutils"
 require "tmpdir"
 require 'hatchet/tasks'
 
-S3_BUCKET_NAME  = "heroku-buildpack-ruby"
+S3_BUCKET_NAME  = "rho-heroku-buildpack"
 VENDOR_URL      = "https://s3.amazonaws.com/#{S3_BUCKET_NAME}"
 
 def s3_tools_dir
@@ -133,7 +133,7 @@ task "node:install", :version do |t, args|
     Dir.chdir(tmpdir) do |dir|
       FileUtils.rm_rf("#{tmpdir}/*")
 
-      sh "curl http://nodejs.org/dist/node-v#{version}.tar.gz -s -o - | tar vzxf -"
+      sh "curl http://nodejs.org/dist/v#{version}/node-v#{version}.tar.gz -s -o - | tar vzxf -"
 
       build_command = [
         "./configure --prefix #{prefix}",
@@ -312,7 +312,7 @@ task "ruby:manifest" do
   require 'yaml'
 
   document = REXML::Document.new(`curl https://#{S3_BUCKET_NAME}.s3.amazonaws.com`)
-  rubies   = document.elements.to_a("//Contents/Key").map {|node| node.text }.select {|text| text.match(/^(ruby|rbx|jruby)-\\\\d+\\\\.\\\\d+\\\\.\\\\d+(-p\\\\d+)?/) }
+  rubies   = document.elements.to_a("//Contents/Key").map {|node| node.text}.select{|text| /^(ruby|rbx|jruby)-\d+\.\d+.\d+/.match(text)}.map{|rb| rb.sub(/\.tgz/, "")}
 
   Dir.mktmpdir("ruby_versions-") do |tmpdir|
     name = 'ruby_versions.yml'
