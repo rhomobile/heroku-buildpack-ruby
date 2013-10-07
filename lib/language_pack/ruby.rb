@@ -20,7 +20,8 @@ class LanguagePack::Ruby < LanguagePack::Base
   NODE_JS_BINARY_PATH  = "node-#{NODE_VERSION}"
   JVM_BASE_URL         = "http://heroku-jdk.s3.amazonaws.com"
   JVM_VERSION          = "openjdk7-latest"
-  DEFAULT_RUBY_VERSION = "ruby-2.0.0"
+  # DEFAULT_RUBY_VERSION = "ruby-2.0.0"
+  DEFAULT_RUBY_VERSION = "ruby-1.9.3"
   RBX_BASE_URL         = "http://binaries.rubini.us/heroku"
 
   # detects if this is a valid Ruby app
@@ -685,7 +686,8 @@ params = CGI.parse(uri.query || "")
   # @note execjs will blow up if no JS RUNTIME is detected and is loaded.
   # @return [Array] the node.js binary path if we need it or an empty Array
   def add_node_js_binary
-    gem_is_bundled?('execjs') ? [NODE_JS_BINARY_PATH] : []
+    [NODE_JS_BINARY_PATH] # For rhoconnect stack nodejs is a must
+    # gem_is_bundled?('execjs') ? [NODE_JS_BINARY_PATH] : []
   end
 
   def run_assets_precompile_rake_task
